@@ -8,12 +8,102 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/textViewTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="30dp"
+        android:textColor="@android:color/holo_green_light"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="00:16" />
+
+    <TextView
+        android:id="@+id/textViewScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="30dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="0 / 0" />
+
+    <TextView
+        android:id="@+id/textViewExample"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="30dp"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/textViewOpinionFirst"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/textViewTimer"
+        tools:text="30 + 30" />
+
+    <TextView
+        android:id="@+id/textViewOpinionFirst"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/Citron"
+        android:onClick="onClickAnswer"
+        android:padding="30dp"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@id/textViewOpinionThird"
+        app:layout_constraintEnd_toStartOf="@+id/textViewOpinionSecond"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="111" />
+
+    <TextView
+        android:id="@+id/textViewOpinionSecond"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/ElectricBlue"
+        android:onClick="onClickAnswer"
+        android:padding="30dp"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@id/textViewOpinionFourth"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/textViewOpinionFirst"
+        tools:text="222" />
+
+    <TextView
+        android:id="@+id/textViewOpinionThird"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/LightCorral"
+        android:onClick="onClickAnswer"
+        android:padding="30dp"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textViewOpinionSecond"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="333" />
+
+    <TextView
+        android:id="@+id/textViewOpinionFourth"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/ScreaminGreen"
+        android:onClick="onClickAnswer"
+        android:padding="30dp"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/textViewOpinionFirst"
+        tools:text="444" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
