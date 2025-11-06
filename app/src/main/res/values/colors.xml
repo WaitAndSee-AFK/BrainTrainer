@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="Citron">#C6CA53</color>
+    <color name="ScreaminGreen">#80FF72</color>
+    <color name="ElectricBlue">#7EE8FA</color>
+    <color name="LightCorral">#E58C8A</color>
 </resources>
