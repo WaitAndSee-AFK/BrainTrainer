@@ -9,6 +9,9 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import java.util.Locale
 import kotlin.random.Random
 
@@ -22,100 +25,59 @@ class MainActivity : AppCompatActivity() {
     private lateinit var textViewOpinionFourth: TextView
 
     private val options = mutableListOf<TextView>()
-
-    private lateinit var question: String
-    private var rightAnswer: Int = 0
-    private var rightAnswerPosition: Int = 0
-    private var isPositive: Boolean = false
-    private var minNumber = 5
-    private var maxNumber = 50
-    private var countOfQuestions = 0
-    private var countOfRightAnswers = 0
-    private var gameOver: Boolean = false
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initViews()
-        createTimer()
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        setupObservers()
+        viewModel.startGame()
     }
 
-    private fun createTimer() {
-        object : CountDownTimer(12000, 1000) {
-            override fun onFinish() {
-                gameOver = true
+    private fun setupObservers() {
+        viewModel.timer.observe(this, Observer { text ->
+            textViewTimer.text = text
+        })
+
+        viewModel.timerColor.observe(this, Observer { colorRes ->
+            textViewTimer.setTextColor(ContextCompat.getColor(this, colorRes))
+        })
+
+        viewModel.score.observe(this, Observer { score ->
+            textViewScore.text = score
+        })
+
+        viewModel.question.observe(this, Observer { question ->
+            textViewExample.text = question
+        })
+
+        viewModel.answer.observe(this, Observer { answers ->
+            for (i in options.indices) {
+                options[i].text = answers.getOrNull(i)?.toString() ?: ""
+            }
+        })
+
+        viewModel.toastM.observe(this, Observer { message ->
+            if (message.isNotEmpty()) {
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        viewModel.navigateToScore.observe(this, Observer { result ->
+            if (result != -1) {
                 val preferences: SharedPreferences = PreferenceManager
                     .getDefaultSharedPreferences(applicationContext)
                 val max = preferences.getInt("max", 0)
-                if (countOfRightAnswers >= max) {
-                    preferences.edit().putInt("max", countOfRightAnswers).apply()
+                if (result >= max) {
+                    preferences.edit().putInt("max", result).apply()
                 }
-                val intent = Intent(this@MainActivity, ScoreActivity::class.java)
-                intent.putExtra("result", countOfRightAnswers)
+                val intent = Intent(this, ScoreActivity::class.java)
+                intent.putExtra("result", result)
                 startActivity(intent)
             }
-
-            override fun onTick(millisUntilFinished: Long) {
-                textViewTimer.text = getTimer(millisUntilFinished)
-                if (millisUntilFinished < 10_000) {
-                    textViewTimer.setTextColor(resources.getColor(android.R.color.holo_red_light))
-                }
-            }
-        }.start()
-    }
-
-    private fun getTimer(mills: Long): String {
-        var seconds: Int = (mills / 1_000).toInt()
-        val minutes: Int = seconds / 60
-        seconds = seconds % 60
-        return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
-    }
-
-    fun onClickAnswer(view: View) {
-        if (!gameOver) {
-            val textView = view as TextView
-            val answer: String = textView.text.toString()
-            val chosenAnswer = answer.toInt()
-            if (chosenAnswer == rightAnswer) {
-                countOfRightAnswers++
-                Toast.makeText(
-                    this@MainActivity,
-                    "Верно",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                Toast.makeText(
-                    this@MainActivity,
-                    "Неверно",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            countOfQuestions++
-            playNext()
-        }
-    }
-
-    private fun generateWrongAnswer(): Int {
-        var result: Int = -1
-        do {
-            result = Random.nextInt((maxNumber * 2 + 1) + (maxNumber - minNumber))
-        } while (result == rightAnswer)
-        return result
-    }
-
-    private fun generateQuestion() {
-        val a = Random.nextInt((maxNumber - minNumber + 1) + minNumber)
-        val b = Random.nextInt((maxNumber - minNumber + 1) + minNumber)
-        isPositive = Random.nextBoolean()
-        if (isPositive) {
-            rightAnswer = a + b
-            question = String.format("%s + %s", a, b)
-        } else {
-            rightAnswer = a - b
-            question = String.format("%s - %s", a, b)
-        }
-        textViewExample.text = question
-        rightAnswerPosition = Random.nextInt(4)
+        })
     }
 
     private fun initViews() {
@@ -132,19 +94,12 @@ class MainActivity : AppCompatActivity() {
             add(textViewOpinionThird)
             add(textViewOpinionFourth)
         }
-       playNext()
     }
 
-    private fun playNext() {
-        generateQuestion()
-        for (i in 0 until options.size) {
-            if (i == rightAnswerPosition) {
-                options.get(i).text = rightAnswer.toString()
-            } else {
-                options.get(i).text = generateWrongAnswer().toString()
-            }
-        }
-        val score: String = String.format("%s / %s", countOfRightAnswers, countOfQuestions)
-        textViewScore.text = score
+    fun onClickAnswer(view: View) {
+        val textView = view as TextView
+        val answer: String = textView.text.toString()
+        val chosenAnswer = answer.toIntOrNull() ?: return
+        viewModel.onAnswerSelected(chosenAnswer)
     }
 }
